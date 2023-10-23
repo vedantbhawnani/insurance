@@ -1,3 +1,3 @@
-# insurance
+# Insurance
 
-A new Flutter project.
+A flutter application with firebase integration to load/upload data.
