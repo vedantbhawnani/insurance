@@ -12,7 +12,11 @@ dependencies:
   firebase_core: ^2.19.0
   flutter:
     sdk: flutter
+  flutter_email_sender: ^6.0.2
   google_fonts: ^6.1.0
+  http: ^1.1.0
+  mailer: ^6.0.1
+  workmanager: ^0.5.2
 
 dev_dependencies:
   flutter_test:

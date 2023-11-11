@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Customers extends StatelessWidget {
-  const Customers({super.key});
-
+  Customers({super.key});
   @override
   Widget build(BuildContext context) {
+    List dates = [];
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -28,7 +28,8 @@ class Customers extends StatelessWidget {
                     for (var message in messages) {
                       final customerName = message['Name'];
                       final customerPolicy = message['Policy'];
-                      final customerExpiry = message['Expiry Date'];
+                      final DateTime customerExpiry = message['Expiry Date'].toDate();
+                      dates.add(customerExpiry);
                       final messageWigdet = Text(
                         'Name: $customerName\nPolicy: $customerPolicy \nExpiry: $customerExpiry\n',
                         style: TextStyle(
