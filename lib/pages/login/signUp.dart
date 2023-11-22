@@ -76,13 +76,13 @@ class _SignUpState extends State<SignUp> {
               } catch (e) {
                 print(e);
               }
-              Navigator.pushNamed(context, '/home');
+              Navigator.pushReplacementNamed(context, '/home');
             },
-            child: Text("SignUp"),
             style: ElevatedButton.styleFrom(
                 elevation: 7,
                 minimumSize: Size(MediaQuery.of(context).size.width / 8,
                     MediaQuery.of(context).size.height / 30)),
+            child: Text("SignUp"),
           ),
           TextButton(
               onPressed: () {

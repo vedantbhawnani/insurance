@@ -69,16 +69,26 @@ class _LoginPageState extends State<LoginPage> {
                   if (e.code == 'user-not-found') {
                     print('No user found for that email.');
                   } else if (e.code == 'wrong-password') {
-                    print('Wrong password provided for that user.');
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(SnackBar(content: Text('Wrong Password')));
                   }
                 }
-                Navigator.pushNamed(context, '/home');
+                FirebaseAuth.instance
+                .authStateChanges()
+                .listen((x) {
+                  if (x == null){
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(SnackBar(content: Text('Incorrect Password/Email')));
+                  }
+                  else {
+                    Navigator.pushReplacementNamed(context, '/home');
+                  }});
               },
-              child: Text("Login"),
               style: ElevatedButton.styleFrom(
                   elevation: 7,
                   minimumSize: Size(MediaQuery.of(context).size.width / 8,
                       MediaQuery.of(context).size.height / 30)),
+              child: Text("Login"),
             ),
             TextButton(
                 onPressed: () {

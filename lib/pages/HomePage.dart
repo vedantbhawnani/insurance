@@ -1,9 +1,16 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:workmanager/workmanager.dart';
 
 import '../backgroundchecker.dart';
+import '../main.dart';
+
+List<DateTime> expiryDates = [];
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -22,33 +29,43 @@ class _HomePageState extends State<HomePage> {
   DateTime selectedDate = DateTime.now();
   bool text = true;
 
-
-  //the birthday's date
-
   @override
   Widget build(BuildContext context) {
-    var brightness = MediaQuery
-        .of(context)
-        .platformBrightness;
+    var brightness = MediaQuery.of(context).platformBrightness;
     bool isDarkMode = brightness == Brightness.dark;
 
-
-
     return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: true,
+        actions: [
+          // ElevatedButton(
+          //   onPressed: () {
+          //     Navigator.pushReplacementNamed(context, '/settings');
+          //   },
+          //   child: Icon(
+          //     Icons.settings,
+          //   ),
+          //   style: ElevatedButton.styleFrom(
+          //       backgroundColor: Theme.of(context).primaryColorDark),
+          // ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/customers');
+            },
+            style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).primaryColorDark),
+            child: Icon(Icons.person),
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             Padding(
                 padding: EdgeInsets.only(
-                    top: MediaQuery
-                        .of(context)
-                        .size
-                        .height / 5)),
+                    top: MediaQuery.of(context).size.height / 22)),
             Padding(
-              padding: EdgeInsets.all(MediaQuery
-                  .of(context)
-                  .size
-                  .width / 100),
+              padding: EdgeInsets.all(MediaQuery.of(context).size.width / 100),
               child: Text(
                 'Customer Details',
                 textAlign: TextAlign.end,
@@ -60,22 +77,10 @@ class _HomePageState extends State<HomePage> {
             ),
             Padding(
               padding: EdgeInsets.only(
-                  left: MediaQuery
-                      .of(context)
-                      .size
-                      .width / 4,
-                  right: MediaQuery
-                      .of(context)
-                      .size
-                      .width / 4,
-                  bottom: MediaQuery
-                      .of(context)
-                      .size
-                      .height / 45,
-                  top: MediaQuery
-                      .of(context)
-                      .size
-                      .height / 45),
+                  left: MediaQuery.of(context).size.width / 4,
+                  right: MediaQuery.of(context).size.width / 4,
+                  bottom: MediaQuery.of(context).size.height / 45,
+                  top: MediaQuery.of(context).size.height / 45),
               child: TextField(
                 controller: nameController,
                 decoration: InputDecoration(
@@ -85,18 +90,9 @@ class _HomePageState extends State<HomePage> {
             ),
             Padding(
               padding: EdgeInsets.only(
-                left: MediaQuery
-                    .of(context)
-                    .size
-                    .width / 4,
-                right: MediaQuery
-                    .of(context)
-                    .size
-                    .width / 4,
-                bottom: MediaQuery
-                    .of(context)
-                    .size
-                    .height / 45,
+                left: MediaQuery.of(context).size.width / 4,
+                right: MediaQuery.of(context).size.width / 4,
+                bottom: MediaQuery.of(context).size.height / 45,
               ),
               child: TextField(
                 controller: numberController,
@@ -106,18 +102,9 @@ class _HomePageState extends State<HomePage> {
             ),
             Padding(
               padding: EdgeInsets.only(
-                left: MediaQuery
-                    .of(context)
-                    .size
-                    .width / 4,
-                right: MediaQuery
-                    .of(context)
-                    .size
-                    .width / 4,
-                bottom: MediaQuery
-                    .of(context)
-                    .size
-                    .height / 20,
+                left: MediaQuery.of(context).size.width / 4,
+                right: MediaQuery.of(context).size.width / 4,
+                bottom: MediaQuery.of(context).size.height / 20,
               ),
               child: TextField(
                 controller: emailController,
@@ -135,18 +122,9 @@ class _HomePageState extends State<HomePage> {
             ),
             Padding(
               padding: EdgeInsets.only(
-                left: MediaQuery
-                    .of(context)
-                    .size
-                    .width / 4,
-                right: MediaQuery
-                    .of(context)
-                    .size
-                    .width / 4,
-                bottom: MediaQuery
-                    .of(context)
-                    .size
-                    .height / 45,
+                left: MediaQuery.of(context).size.width / 4,
+                right: MediaQuery.of(context).size.width / 4,
+                bottom: MediaQuery.of(context).size.height / 45,
               ),
               child: TextField(
                 controller: policyController,
@@ -155,38 +133,29 @@ class _HomePageState extends State<HomePage> {
                     label: Text('Name of Policy')),
               ),
             ),
-
+            SizedBox(height: 15),
+            Text(
+              'Policy Expiry Date',
+              style: TextStyle(
+                color: isDarkMode ? Colors.white : Colors.black54,
+                fontSize: 15,
+              ),
+            ),
             Padding(
                 padding: EdgeInsets.only(
-                  left: MediaQuery
-                      .of(context)
-                      .size
-                      .width / 4,
-                  right: MediaQuery
-                      .of(context)
-                      .size
-                      .width / 4,
-                  bottom: MediaQuery
-                      .of(context)
-                      .size
-                      .height / 45,
+                  left: MediaQuery.of(context).size.width / 4,
+                  right: MediaQuery.of(context).size.width / 4,
+                  bottom: MediaQuery.of(context).size.height / 45,
                 ),
-                child: ElevatedButton(onPressed: () {
-                  // Change selectedDate format to include a user-specific time, either by letting them choose time or by inserting it as a fixed time after asking uncle.
-                  selectedDate = _selectDate(context) as DateTime;
-
-                  // setState() {
-                  //   policyDate = DateTime(
-                  //       selectedDate.year, selectedDate.month, selectedDate.day,
-                  //       10, 0);
-                  // }
-                  },
-                    child: Text("Policy Expiry Date"),
+                child: ElevatedButton(
+                    onPressed: () {
+                      // Change selectedDate format to include a user-specific time, either by letting them choose time or by inserting it as a fixed time after asking uncle.
+                      _selectDate(context);
+                    },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                    )
-                )
-            ),
+                      backgroundColor: Color.fromARGB(255, 77, 90, 173),
+                    ),
+                    child: Text("Policy Expiry Date"))),
             ElevatedButton(
                 onPressed: () {
                   FirebaseFirestore.instance.collection('Customers').add({
@@ -195,6 +164,7 @@ class _HomePageState extends State<HomePage> {
                     'Phone No.': numberController.text,
                     'Email': emailController.text,
                     'Policy': policyController.text,
+                    'User': FirebaseAuth.instance.currentUser?.uid,
                   });
                   setState(() {
                     nameController.text = "";
@@ -203,31 +173,47 @@ class _HomePageState extends State<HomePage> {
                     policyController.text = "";
                     numberController.text = "";
                   });
+                  expiryDates.add(selectedDate);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Data Saved')));
                 },
-                child: Text('Save Data'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
-                )
+                ),
+                child: Text('Save Data')),
+            SizedBox(
+              height: MediaQuery.of(context).size.width / 13,
             ),
             SizedBox(
-              height: MediaQuery
-                  .of(context)
-                  .size
-                  .width / 10,
+              height: 20,
             ),
             ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/customers');
-                },
-                child: Text('See all customer details')),
-            SizedBox(
-              height: 40,
-            ),
-            ElevatedButton(
-              onPressed: (){
-                // getDriverList(dates, mails);
-                fetchdata();
-              }, child: Text('Click to send mails.'),
+                onPressed: Platform.isAndroid
+                    ? () {
+                        Workmanager().registerPeriodicTask(
+                          my_task,
+                          my_task,
+                        );
+                      }
+                    : null,
+                child: Text("task Android")),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Align(
+                alignment: Alignment.bottomRight,
+                child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        shape: CircleBorder(), padding: EdgeInsets.all(13)),
+                    onPressed: () {
+                      // getDriverList(dates, mails);
+                      fetchdata();
+                    },
+                    child: RichText(
+                        text: TextSpan(children: [
+                      // TextSpan(text: "Mail  ", style: TextStyle(fontSize: 18)),
+                      WidgetSpan(child: Icon(Icons.mark_email_read, size: 28))
+                    ]))),
+              ),
             ),
           ],
         ),
@@ -235,7 +221,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Future<DateTime> _selectDate(BuildContext context) async {
+  Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
         initialDate: DateTime.now(),
         firstDate: DateTime(2010, 1),
@@ -246,6 +232,5 @@ class _HomePageState extends State<HomePage> {
         selectedDate = picked;
       });
     }
-    return selectedDate;
   }
 }
