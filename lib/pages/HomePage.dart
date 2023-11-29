@@ -190,7 +190,7 @@ class _HomePageState extends State<HomePage> {
             ElevatedButton(
                 onPressed: Platform.isAndroid
                     ? () {
-                        Workmanager().registerPeriodicTask(
+                        Workmanager().registerOneOffTask(
                           my_task,
                           my_task,
                         );

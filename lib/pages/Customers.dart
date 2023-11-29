@@ -33,6 +33,9 @@ class _CustomersState extends State<Customers> {
                     .collection('Customers')
                     .where('User',
                         isEqualTo: FirebaseAuth.instance.currentUser?.uid)
+                    .where('Expiry Date',
+                        isGreaterThan: DateTime(2023, 11, 29 + 8),
+                        isLessThan: DateTime(2023, 11, 29 + 15))
                     .orderBy('Expiry Date', descending: true)
                     .snapshots(),
                 builder: (context, snapshot) {
@@ -236,6 +239,7 @@ class _CustomersState extends State<Customers> {
                   );
                 });
           }
+          return null;
         },
       );
 

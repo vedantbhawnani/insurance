@@ -17,6 +17,7 @@ dependencies:
   google_fonts: ^6.1.0
   http: ^1.1.0
   intl: ^0.18.1
+  logger: ^2.0.2+1
   mailer: ^6.0.1
   shared_preferences: ^2.2.2
   workmanager: ^0.5.2

@@ -5,35 +5,29 @@ import 'email.dart';
 int min = 8;
 int max = 15;
 fetchdata() async {
+  DateTime now = DateTime.now();
   var db = FirebaseFirestore.instance;
   db
       .collection("Customers")
       .where('User', isEqualTo: FirebaseAuth.instance.currentUser?.uid)
+      .where('Expiry Date',
+          isGreaterThan: DateTime(now.year, now.month, now.day + 8),
+          isLessThan: DateTime(now.year, now.month, now.day + 15))
+      .orderBy('Expiry Date', descending: true)
       .get()
       .then(
     (querySnapshot) {
-      // print("Successfully completed");
+      print("Successfully completed");
       for (var docSnapshot in querySnapshot.docs) {
         // print('${docSnapshot.id} => ${docSnapshot.data()}');
-        getDriverList(docSnapshot.data()['Expiry Date'].toDate(),
-            docSnapshot.data()['Email']);
+        email(
+          docSnapshot.data()['Email'],
+          docSnapshot.data()['Expiry Date'].toDate(),
+        );
       }
     },
     onError: (e) => print("Error completing: $e"),
   );
-}
-
-getDriverList(date, mail) {
-  DateTime now = DateTime.now();
-  DateTime today = DateTime(now.year, now.month, now.day, 10, 0);
-  // print(date.difference(today));
-  print('Checking');
-  print((date.difference(today)));
-  if (Duration(days: max) >= date.difference(today) &&
-      date.difference(today) >= Duration(days: min)) {
-    print('Match found!');
-    email(mail, 'from Button', date);
-  }
 }
 
 int daysBetween(DateTime from, DateTime to) {
